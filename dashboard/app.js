@@ -24,13 +24,9 @@
   // The page recomputes a row with the same arithmetic as lib/model.ts and says so in the detail
   // view, so the screenshots and the code behind them visibly agree.
   function impliedOf(r) {
-    var m = DATA.model;
-    var g = Math.min(m.growth_cap, Math.max(m.growth_floor, r.change_7d || 0));
-    var gm = Math.max(0.4, 1 + (g / 100) * (g >= 0 ? m.growth_weight_pos : m.growth_weight_neg));
-    var age = r.age_days === null || r.age_days === undefined ? m.unknown_age_days : r.age_days;
-    var mm = m.maturity_base + m.maturity_range * (1 - Math.exp(-Math.max(0, age) / m.maturity_tau_days));
-    var bm = 1 + m.breadth_per_doubling * Math.min(m.breadth_max_doublings, Math.log2(Math.max(1, (r.chains || []).length)));
-    return Math.max(1, Math.round(r.tvl_usd * r.peer_multiple * gm * mm * bm));
+    // lib/model.ts computes the board's implied value from exactly these published, rounded
+    // multipliers, so this recomputation agrees with board.json to the dollar.
+    return Math.max(1, Math.round(r.tvl_usd * r.peer_multiple * r.growth_multiplier * r.maturity_multiplier * r.breadth_multiplier));
   }
   function el(tag, attrs) {
     var node = document.createElement(tag);

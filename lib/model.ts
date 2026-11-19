@@ -334,7 +334,10 @@ export function impliedValue(
   const { pct, mult: growthMult } = growthMultiplier(protocol.change_7d, model);
   const maturityMult = maturityMultiplier(age, model);
   const breadthMult = breadthMultiplier(protocol.chains, model);
-  const implied = Math.max(1, Math.round(protocol.tvl_usd * multiple * growthMult * maturityMult * breadthMult));
+  // The implied value is computed from the rounded multipliers the board publishes, so the
+  // dashboard's recomputation from data.js (peer_multiple and the three multipliers, all
+  // round4) lands on exactly the number board.json carries, at any TVL.
+  const implied = Math.max(1, Math.round(protocol.tvl_usd * round4(multiple) * round4(growthMult) * round4(maturityMult) * round4(breadthMult)));
   return { implied, growthPct: pct, growthMult, maturityMult, breadthMult, peerMultiple: multiple, peerCount, age };
 }
 
